@@ -10,7 +10,6 @@ st.set_page_config(
 )
 
 # --- 2. 스타일 및 디자인 (CSS) ---
-# 기본 폰트와 여백 등을 조정하여 깔끔한 느낌을 줍니다.
 st.markdown("""
     <style>
     .main-header {
@@ -87,11 +86,18 @@ if selected_mbti:
         </div>
     """, unsafe_allow_html=True)
 
-    # Folium 지도 생성
+    # Folium 지도 생성 (한글 구글 지도 적용)
     st.write("### 🗺️ 위치 미리보기")
-    m = folium.Map(location=[info['lat'], info['lon']], zoom_start=10)
     
-    # 마커 추가 (툴팁에 이모지 포함)
+    # tiles URL에 hl=ko 옵션을 넣어 한국어 라벨을 요청합니다.
+    m = folium.Map(
+        location=[info['lat'], info['lon']], 
+        zoom_start=12,
+        tiles='http://mt0.google.com/vt/lyrs=m&hl=ko&x={x}&y={y}&z={z}',
+        attr='Google'
+    )
+    
+    # 마커 추가
     folium.Marker(
         [info['lat'], info['lon']],
         popup=info['city'],
@@ -99,8 +105,7 @@ if selected_mbti:
         icon=folium.Icon(color='red', icon='plane', prefix='fa')
     ).add_to(m)
 
-    # Streamlit에서 Folium 지도 표시
-    # 별도 라이브러리(streamlit-folium) 설치를 최소화하기 위해 html 컴포넌트 사용
+    # Streamlit에서 지도 표시
     map_html = m._repr_html_()
     html(map_html, height=400)
 
